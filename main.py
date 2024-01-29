@@ -1,23 +1,9 @@
 from openai import OpenAI
-import re
 
 client = OpenAI()
 
-code_patterns = [
-    re.compile(r'function\s+\w+\s*\(.*\)'),  # Function definition
-    re.compile(r'var\s+\w+\s*='),            # Variable declaration
-    re.compile(r'let\s+\w+\s*='),            # ES6 variable declaration
-    re.compile(r'const\s+\w+\s*='),          # Constant declaration
-    # Add more patterns as needed
-]
-
-def is_code_related(query):
-    return any(pattern.search(query) for pattern in code_patterns)
-
 def analyze_code(js_code):
-    if not is_code_related(js_code):
-        return "The query does not seem to be code-related. Please provide a JavaScript code snippet."
-       try:
+    try:
         response = client.chat.completions.create(
             model="gpt-4-turbo-preview",
             messages=[
@@ -28,16 +14,13 @@ def analyze_code(js_code):
         return response.choices[0].message.content
     except Exception as e:
         return f"An error occurred: {e}"
-
+    
 def generate_code(task_description):
-    if not is_code_related(task_description):
-        return "The query does not seem to be code-related. Please describe a coding task."
-    # existing code for generating code...
     try:
         response = client.chat.completions.create(
             model="gpt-4-turbo-preview",
             messages=[
-                {"role": "system", "content": "You are a helpful assistant capable of writing code for various tasks. Please provide responses strictly related to code generation."},
+                {"role": "system", "content": "You are a helpful assistant capable of writing code for various tasks."},
                 {"role": "user", "content": task_description}
             ]
         )
